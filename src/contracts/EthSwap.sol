@@ -5,6 +5,12 @@ contract EthSwap {
 	Token public token;
 	uint rate = 100;
 
+	event TokenPurchase(
+		address account, 
+		address token,
+		uint amount,
+		uint rate
+	);
 	constructor(Token _token) public {
 		token = _token;
 	}
@@ -12,5 +18,6 @@ contract EthSwap {
 	function buyTokens() public payable {
 		uint tokenAmount = msg.value * 100;
 		token.transfer(msg.sender, tokenAmount);
+		emit TokenPurchase(msg.sender, address(token), tokenAmount, rate);
 	}
 }
