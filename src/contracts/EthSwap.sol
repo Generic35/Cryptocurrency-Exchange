@@ -3,8 +3,14 @@ import "./Token.sol";
 contract EthSwap {
 	string public name = "EthSwap Instant Exchange";
 	Token public token;
+	uint rate = 100;
 
 	constructor(Token _token) public {
 		token = _token;
+	}
+
+	function buyTokens() public payable {
+		uint tokenAmount = msg.value * 100;
+		token.transfer(msg.sender, tokenAmount);
 	}
 }

@@ -14,7 +14,7 @@ function tokens(n) {
 	return web3.utils.toWei(n, 'ether');
 }
 
-contract('EthSwap', (accounts) => {
+contract('EthSwap', ([deployer, investor ]) => {
 	let token, ethSwap;
 	before(async()=>{
 		token = await Token.new();
@@ -43,4 +43,24 @@ contract('EthSwap', (accounts) => {
 		})
 	})
 
+	describe('buyTokens()', async () => {
+		let results;
+		before(async()=>{
+			results = await ethSwap.buyTokens({ from: investor, value: web3.utils.toWei('1', 'ether')});
+		})
+		it('Allows user to instntly purchase tokens from ethwap for a fixed price', async () => {
+			// investor's token balance should have increased by 100
+			let investorBalance = await token.balanceOf(investor);
+			assert.equal(investorBalance, tokens('100'))
+
+			let ethSwapBalance;
+			// ethSwap token balance should have decreased by 100 tokens
+			ethSwapBalance = await token.balanceOf(ethSwap.address);
+			assert.equal(ethSwapBalance.toString(), tokens('999900'))
+			// ethSwap ethereum balance should have increased by 1 Ether
+			ethSwapBalance = await web3.eth.getBalance(ethSwap.address);
+			assert(ethSwapBalance.toString(), web3.utils.toWei('1', 'Ether'));
+
+		})
+	})
 })
