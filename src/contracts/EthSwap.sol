@@ -17,6 +17,11 @@ contract EthSwap {
 
 	function buyTokens() public payable {
 		uint tokenAmount = msg.value * 100;
+
+		// require ethSwap has enough tokens
+		require(token.balanceOf(address(this)) >= tokenAmount);
+
+		// transfers tokens to the user
 		token.transfer(msg.sender, tokenAmount);
 		emit TokenPurchase(msg.sender, address(token), tokenAmount, rate);
 	}
