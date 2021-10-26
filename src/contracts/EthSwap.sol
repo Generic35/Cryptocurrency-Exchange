@@ -35,8 +35,13 @@ contract EthSwap {
 	}
 
 	function sellTokens(uint _amount) public {
+		// user can't sell more tokens than they have
+		require(token.balanceOf(msg.sender) >= _amount);
+		
 		uint etherAmount = _amount / rate;
 
+		require(address(this).balance >= etherAmount);
+		
 		// take the user's tokens
 		token.transferFrom(msg.sender, address(this), _amount);
 
