@@ -87,6 +87,13 @@ contract('EthSwap', ([deployer, investor ]) => {
 			// ethSwap ethereum balance should have increased by 1 Ether
 			ethSwapBalance = await web3.eth.getBalance(ethSwap.address);
 			assert(ethSwapBalance.toString(), web3.utils.toWei('0', 'Ether'));
+
+			// Check logs to test the expected event was emitted with expected data
+			const event = results.logs[0].args
+			assert.equal(event.account, investor)
+			assert.equal(event.token, token.address)
+			assert.equal(event.amount.toString(), tokens('100').toString())
+			assert.equal(event.rate.toString(), '100')	
 		})
 	})
 })
