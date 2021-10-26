@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import Web3 from 'web3'
+import EthSwap from '../abis/EthSwap.json'
+import Token from '../abis/Token.json'
 import NavBar from './NavBar'
+import Main from './Main'
 
 class App extends Component {
 
@@ -19,28 +22,29 @@ class App extends Component {
     const ethBalance = await web3.eth.getBalance(this.state.account)
     this.setState({ ethBalance })
 		console.log(this.state.ethBalance)
-    // // Load Token
-    // const networkId =  await web3.eth.net.getId()
-    // const tokenData = Token.networks[networkId]
-    // if(tokenData) {
-    //   const token = new web3.eth.Contract(Token.abi, tokenData.address)
-    //   this.setState({ token })
-    //   let tokenBalance = await token.methods.balanceOf(this.state.account).call()
-    //   this.setState({ tokenBalance: tokenBalance.toString() })
-    // } else {
-    //   window.alert('Token contract not deployed to detected network.')
-    // }
+    // Load Token
+    const networkId =  await web3.eth.net.getId()
+    const tokenData = Token.networks[networkId]
+    if(tokenData) {
+      const token = new web3.eth.Contract(Token.abi, tokenData.address)
+      this.setState({ token })
+      let tokenBalance = await token.methods.balanceOf(this.state.account).call()
+			console.log('token balance ', tokenBalance.toString())
+      this.setState({ tokenBalance: tokenBalance.toString() })
+    } else {
+      window.alert('Token contract not deployed to detected network.')
+    }
 
-    // // Load EthSwap
-    // const ethSwapData = EthSwap.networks[networkId]
-    // if(ethSwapData) {
-    //   const ethSwap = new web3.eth.Contract(EthSwap.abi, ethSwapData.address)
-    //   this.setState({ ethSwap })
-    // } else {
-    //   window.alert('EthSwap contract not deployed to detected network.')
-    // }
+    // Load EthSwap
+    const ethSwapData = EthSwap.networks[networkId]
+    if(ethSwapData) {
+      const ethSwap = new web3.eth.Contract(EthSwap.abi, ethSwapData.address)
+      this.setState({ ethSwap })
+    } else {
+      window.alert('EthSwap contract not deployed to detected network.')
+    }
 
-    // this.setState({ loading: false })
+    this.setState({ loading: false })
   }
 
 
@@ -71,6 +75,13 @@ class App extends Component {
   }
 
   render() {
+		let content
+		
+		if(this.state.loading) {
+			content = <p id="loader" className="text-center">Loading...</p>
+		} else {
+			content = <Main />
+		}
     return (
       <div>
         <NavBar account={this.state.account} />
@@ -83,10 +94,8 @@ class App extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                 
                 </a>
-                <h1>hello world</h1>
-                
+                {content}
               </div>
             </main>
           </div>
