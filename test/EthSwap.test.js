@@ -48,7 +48,7 @@ contract('EthSwap', ([deployer, investor ]) => {
 		before(async()=>{
 			results = await ethSwap.buyTokens({ from: investor, value: web3.utils.toWei('1', 'ether')});
 		})
-		it('Allows user to instntly purchase tokens from ethwap for a fixed price', async () => {
+		it('Allows user to instantly purchase tokens from ethwap for a fixed price', async () => {
 			// investor's token balance should have increased by 100
 			let investorBalance = await token.balanceOf(investor);
 			assert.equal(investorBalance, tokens('100'))
@@ -67,6 +67,26 @@ contract('EthSwap', ([deployer, investor ]) => {
 			assert.equal(event.token, token.address)
 			assert.equal(event.amount.toString(), tokens('100').toString())
 			assert.equal(event.rate.toString(), '100')
+		})
+	})
+
+	describe('sellTokens()', async () => {
+		let results;
+		before(async()=>{
+			await token.approve(ethSwap.address, tokens('100'), { from: investor });
+			results = await ethSwap.sellTokens(tokens('100'), { from: investor });
+		})
+		it('Allows user to instantly sell tokens from ethwap for a fixed price', async () => {
+			let investorBalance = await token.balanceOf(investor);
+			assert.equal(investorBalance, tokens('0'));
+
+			let ethSwapBalance;
+			// ethSwap token balance should have decreased by 100 tokens
+			ethSwapBalance = await token.balanceOf(ethSwap.address);
+			assert.equal(ethSwapBalance.toString(), tokens('1000000'))
+			// ethSwap ethereum balance should have increased by 1 Ether
+			ethSwapBalance = await web3.eth.getBalance(ethSwap.address);
+			assert(ethSwapBalance.toString(), web3.utils.toWei('0', 'Ether'));
 		})
 	})
 })

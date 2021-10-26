@@ -25,4 +25,15 @@ contract EthSwap {
 		token.transfer(msg.sender, tokenAmount);
 		emit TokenPurchase(msg.sender, address(token), tokenAmount, rate);
 	}
+
+	function sellTokens(uint _amount) public {
+		uint etherAmount = _amount / rate;
+
+		// take the user's tokens
+		token.transferFrom(msg.sender, address(this), _amount);
+
+		// give him the corresponding ether
+		msg.sender.transfer(etherAmount);
+	}
+
 }
